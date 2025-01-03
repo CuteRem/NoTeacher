@@ -37,14 +37,27 @@
 
         .selection-area {
             margin-bottom: 20px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            justify-content: center;
         }
 
-        .player-select {
-            width: 100%;
-            padding: 10px;
-            margin-bottom: 20px;
-            border-radius: 5px;
-            border: 1px solid #ddd;
+        .player-checkbox {
+            display: none;
+        }
+
+        .player-label {
+            padding: 8px 16px;
+            background: #f0f0f0;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .player-checkbox:checked + .player-label {
+            background: #e74c3c;
+            color: white;
         }
 
         .button-area {
@@ -125,15 +138,23 @@
         <h1>TEAM BGK</h1>
 
         <div class="selection-area">
-            <select id="excludePlayer" class="player-select">
-                <option value="">选择要排除的人员</option>
-                <option value="李景巍">李景巍</option>
-                <option value="梁炎">梁炎</option>
-                <option value="宁薛东">宁薛东</option>
-                <option value="樊鹏">樊鹏</option>
-                <option value="黄鹏举">黄鹏举</option>
-                <option value="金纪凯">金纪凯</option>
-            </select>
+            <input type="checkbox" id="player1" class="player-checkbox" value="李景巍">
+            <label for="player1" class="player-label">李景巍</label>
+
+            <input type="checkbox" id="player2" class="player-checkbox" value="梁炎">
+            <label for="player2" class="player-label">梁炎</label>
+
+            <input type="checkbox" id="player3" class="player-checkbox" value="宁薛东">
+            <label for="player3" class="player-label">宁薛东</label>
+
+            <input type="checkbox" id="player4" class="player-checkbox" value="樊鹏">
+            <label for="player4" class="player-label">樊鹏</label>
+
+            <input type="checkbox" id="player5" class="player-checkbox" value="黄鹏举">
+            <label for="player5" class="player-label">黄鹏举</label>
+
+            <input type="checkbox" id="player6" class="player-checkbox" value="金纪凯">
+            <label for="player6" class="player-label">金纪凯</label>
         </div>
 
         <div class="button-area">
@@ -142,7 +163,6 @@
         </div>
 
         <div class="result-area" id="result">
-            <!-- 结果将在这里显示 -->
         </div>
     </div>
 
@@ -169,29 +189,24 @@
         }
         
         function randomize() {
-            const excludedPlayer = document.getElementById('excludePlayer').value;
+            const excludedPlayers = Array.from(document.querySelectorAll('.player-checkbox:checked')).map(cb => cb.value);
             
-            if (!excludedPlayer) {
-                alert('请选择要排除的人员！');
+            if (excludedPlayers.length > 1) {
+                alert('只能否决一个人！');
                 return;
             }
 
-            const availablePlayers = allPlayers.filter(player => player !== excludedPlayer);
+            if (excludedPlayers.length === 0) {
+                alert('请选择要否决的人员！');
+                return;
+            }
+
+            const availablePlayers = allPlayers.filter(player => !excludedPlayers.includes(player));
             const shuffledPlayers = shuffle([...availablePlayers]);
             
             const resultArea = document.getElementById('result');
             resultArea.innerHTML = '';
 
-            // 显示被排除的人员
-            const excludedItem = document.createElement('div');
-            excludedItem.className = 'result-item';
-            excludedItem.innerHTML = `
-                <span>被排除:</span>
-                <span>${excludedPlayer}</span>
-            `;
-            resultArea.appendChild(excludedItem);
-
-            // 显示随机分配结果
             positions.forEach((position, index) => {
                 const resultItem = document.createElement('div');
                 resultItem.className = 'result-item';
