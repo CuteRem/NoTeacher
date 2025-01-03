@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>队伍位置随机分配</title>
+    <link rel="icon" type="image/x-icon" href="./favicon.ico">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Microsoft YaHei', sans-serif;
+            background: #f5f5f5;
+            color: #333;
+            line-height: 1.6;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        h1 {
+            text-align: center;
+            margin-bottom: 30px;
+            color: #2c3e50;
+        }
+
+        .selection-area {
+            margin-bottom: 20px;
+        }
+
+        .player-select {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 20px;
+            border-radius: 5px;
+            border: 1px solid #ddd;
+        }
+
+        .button-area {
+            text-align: center;
+            margin: 20px 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 20px;
+        }
+
+        button {
+            background: #3498db;
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background 0.3s ease;
+        }
+
+        button:hover {
+            background: #2980b9;
+        }
+
+        .button-image {
+            height: 100px;
+            cursor: pointer;
+            transition: transform 0.3s ease;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.9);
+            z-index: 1000;
+            cursor: pointer;
+        }
+
+        .modal-content {
+            max-width: 90%;
+            max-height: 90%;
+            margin: auto;
+            display: block;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
+
+        .result-area {
+            margin-top: 30px;
+        }
+
+        .result-item {
+            padding: 10px;
+            margin: 5px 0;
+            background: #f8f9fa;
+            border-radius: 5px;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        @media (max-width: 600px) {
+            .container {
+                padding: 15px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>队伍位置随机分配</h1>
+
+        <div class="selection-area">
+            <select id="excludePlayer" class="player-select">
+                <option value="">选择要排除的人员</option>
+                <option value="李景巍">李景巍</option>
+                <option value="梁炎">梁炎</option>
+                <option value="宁薛东">宁薛东</option>
+                <option value="樊鹏">樊鹏</option>
+                <option value="黄鹏举">黄鹏举</option>
+                <option value="金纪凯">金纪凯</option>
+            </select>
+        </div>
+
+        <div class="button-area">
+            <button onclick="randomize()">多莫克萨拉莫</button>
+            <img src="./your-image.jpg" alt="按钮图片" class="button-image" onclick="openModal(this)">
+        </div>
+
+        <div class="result-area" id="result">
+            <!-- 结果将在这里显示 -->
+        </div>
+    </div>
+
+    <div id="imageModal" class="modal" onclick="closeModal()">
+        <img class="modal-content" id="modalImage">
+    </div>
+
+    <script>
+        const allPlayers = ['李景巍', '梁炎', '宁薛东', '樊鹏', '黄鹏举', '金纪凯'];
+        const positions = ['上路', '打野', '中路', 'AD', '辅助'];
+
+        function shuffle(array) {
+            let currentIndex = array.length;
+            let randomIndex;
+
+            while (currentIndex > 0) {
+                randomIndex = Math.floor(Math.random() * currentIndex);
+                currentIndex--;
+                [array[currentIndex], array[randomIndex]] = 
+                [array[randomIndex], array[currentIndex]];
+            }
+
+            return array;
+        }
+        
+        function randomize() {
+            const excludedPlayer = document.getElementById('excludePlayer').value;
+            
+            if (!excludedPlayer) {
+                alert('请选择要排除的人员！');
+                return;
+            }
+
+            const availablePlayers = allPlayers.filter(player => player !== excludedPlayer);
+            const shuffledPlayers = shuffle([...availablePlayers]);
+            
+            const resultArea = document.getElementById('result');
+            resultArea.innerHTML = '';
+
+            // 显示被排除的人员
+            const excludedItem = document.createElement('div');
+            excludedItem.className = 'result-item';
+            excludedItem.innerHTML = `
+                <span>被排除:</span>
+                <span>${excludedPlayer}</span>
+            `;
+            resultArea.appendChild(excludedItem);
+
+            // 显示随机分配结果
+            positions.forEach((position, index) => {
+                const resultItem = document.createElement('div');
+                resultItem.className = 'result-item';
+                resultItem.innerHTML = `
+                    <span>${position}:</span>
+                    <span>${shuffledPlayers[index]}</span>
+                `;
+                resultArea.appendChild(resultItem);
+            });
+        }
+
+        function openModal(img) {
+            const modal = document.getElementById('imageModal');
+            const modalImg = document.getElementById('modalImage');
+            modal.style.display = "block";
+            modalImg.src = img.src;
+        }
+
+        function closeModal() {
+            document.getElementById('imageModal').style.display = "none";
+        }
+    </script>
+</body>
+</html>
